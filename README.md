@@ -93,7 +93,3 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 - [gopsutil](https://github.com/shirou/gopsutil): A Go library for retrieving system information, including CPU and memory statistics.
 - **Contributors**: Thank you to everyone who has contributed to this project!
-
-## Contact
-
-For questions or inquiries, please reach out to [your email or contact method].
