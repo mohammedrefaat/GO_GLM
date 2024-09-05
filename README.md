@@ -95,5 +95,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Acknowledgments
 
-- [Prometheus](https://prometheus.io/) for monitoring metrics.
-- [gopsutil](https://github.com/shirou/gopsutil) for gathering system metrics.
+- [gopsutil](https://github.com/shirou/gopsutil): A Go library for retrieving system information, including CPU and memory statistics.
+- **Contributors**: Thank you to everyone who has contributed to this project!
+
+## Contact
+
+For questions or inquiries, please reach out to [your email or contact method].
