@@ -1,99 +1,99 @@
-# Load Manager
 
-Load Manager is a Go package that dynamically adjusts concurrency based on the system's CPU and memory load. It calculates combined load metrics and enables effective management of concurrency based on predefined load thresholds.
+# GO_GLM
+
+GO_GLM is a Go package designed for managing concurrency in Go applications with dynamic load adjustment based on CPU and memory usage. It integrates Prometheus for performance metrics, allowing for monitoring and adjustment of goroutine execution based on system load.
 
 ## Features
 
-- **Load Calculation**: Calculates the combined CPU and memory load.
-- **Dynamic Concurrency Adjustment**: Automatically adjusts concurrency based on live load metrics.
-- **Load History**: Maintains load history for the last 1, 5, and 15 minutes.
-- **Customizable Thresholds**: Allows configuration of maximum concurrency and load thresholds to optimize performance.
+- Dynamic adjustment of goroutines based on CPU and memory load.
+- Prometheus metrics integration to monitor:
+  - Number of goroutines in progress
+  - Total errors encountered
+  - Execution duration
+  - Semaphore wait duration
+  - Total processing time
+- Graceful handling of context cancellation and panic recovery.
 
 ## Installation
 
-To install the `loadmanager` package, run the following command:
+To use GO_GLM in your project, run:
 
 ```bash
-go get github.com/mohammedrefaat/loadmanager
+go get github.com/mohammedrefaat/GO_GLM
 ```
+
 
 ## Usage
 
-### Example
+Here’s a basic example of how to use the `GO_GLM` package:
 
-Here’s an example of how to use the `loadmanager` package in a Go application:
+### 1. Import the package
 
 ```go
-package main
-
 import (
+    "context"
     "fmt"
-    "time"
-
-    "github.com/mohammedrefaat/loadmanager"
+    "github.com/mohammedrefaat/GO_GLM"
 )
+```
 
+### 2. Define your function
+
+Define a function that will be executed by the goroutines:
+
+```go
+func yourFunction(ctx context.Context, item YourType) error {
+    // Your processing logic here
+    return nil
+}
+```
+
+### 3. Execute with dynamic concurrency
+
+Use the `Go` function to run your tasks dynamically:
+
+```go
 func main() {
-    maxConcurrency := 10
-    loadThreshold := 80.0
+    ctx := context.Background()
+    items := []YourType{ /* your data here */ }
 
-    for {
-        concurrency, liveLoad, last1Min, last5Min, last15Min := loadmanager.AdjustConcurrency(maxConcurrency, loadThreshold)
-        fmt.Printf("Live Load: %.2f%%, Last 1-Min Load: %.2f%%, Last 5-Min Load: %.2f%%, Last 15-Min Load: %.2f%%, Concurrency: %d
-",
-            liveLoad, last1Min, last5Min, last15Min, concurrency)
-
-        time.Sleep(1 * time.Second) // Adjust as needed
+    err := GO_GLM.Go(ctx, "yourFunction", items, yourFunction)
+    if err != nil {
+        fmt.Println("Error:", err)
     }
 }
 ```
 
-### Functions
+### 4. Monitor metrics
 
-- **CalculateLoad() float64**
-  - **Description**: Calculates the combined CPU and memory load as a percentage.
-  - **Returns**: A float64 value representing the combined load.
+Prometheus metrics are registered in the package, and you can expose them using an HTTP server for monitoring.
 
-- **AdjustConcurrency(maxConcurrency int, loadThreshold float64) (int, float64, float64, float64, float64)**
-  - **Description**: Adjusts the concurrency based on the live load and returns the current concurrency along with calculated loads for the last 1, 5, and 15 minutes.
-  - **Parameters**:
-    - `maxConcurrency`: The maximum allowable concurrency.
-    - `loadThreshold`: The load threshold for adjusting concurrency.
-  - **Returns**: 
-    - An integer representing the current concurrency.
-    - Float64 values representing live load, last 1-minute load, last 5-minute load, and last 15-minute load.
-
-## Testing
-
-To run the tests for the `loadmanager` package, use the following command:
-
-```bash
-go test ./loadmanager
+```go
+http.Handle("/metrics", promhttp.Handler())
+log.Fatal(http.ListenAndServe(":8080", nil))
 ```
 
-### Test Coverage
+## Metrics
 
-The package includes tests for load calculation and concurrency adjustment. You can extend the tests to cover additional scenarios as needed. 
+The following metrics are available:
+
+- **goroutines_in_progress**: Current number of goroutines in progress.
+- **errors_total**: Total number of errors encountered during execution.
+- **execution_duration_seconds**: Duration of function executions in seconds.
+- **semaphore_wait_duration_seconds**: Time each goroutine waits for a semaphore.
+- **successful_executions_total**: Count of successfully executed goroutines.
+- **goroutine_queue_length**: Current length of the goroutine queue.
+- **total_processing_time_seconds**: Total cumulative processing time of all goroutines.
 
 ## Contributing
 
-Contributions are welcome! If you have suggestions or improvements, please feel free to open an issue or submit a pull request. When contributing, please adhere to the following guidelines:
-
-1. **Fork the repository**: Create a fork of the repository.
-2. **Create a feature branch**: Develop your changes in a new branch.
-3. **Commit your changes**: Ensure your commits are clear and concise.
-4. **Push your changes**: Push your changes back to your fork.
-5. **Open a pull request**: Submit a pull request detailing your changes.
+Contributions are welcome! Please submit a pull request or open an issue to discuss improvements or changes.
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Acknowledgements
+## Acknowledgments
 
-- [gopsutil](https://github.com/shirou/gopsutil): A Go library for retrieving system information, including CPU and memory statistics.
-- **Contributors**: Thank you to everyone who has contributed to this project!
-
-## Contact
-
-For questions or inquiries, please reach out to [your email or contact method].
+- [Prometheus](https://prometheus.io/) for monitoring metrics.
+- [gopsutil](https://github.com/shirou/gopsutil) for gathering system metrics.
